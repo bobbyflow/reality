@@ -1,0 +1,47 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.mobileprovision
+*.keychain*
+
+# Personal activity data — never commit
+*.sqlite
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+Data/
+ActivityData/
+Exports/
+*.csv
+*.jsonl
+
+# Apple / Swift
+.DS_Store
+.build/
+DerivedData/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+*.dSYM/
+*.app/
+*.pkg
+*.dmg
+
+# Web prototype
+node_modules/
+dist/
+.next/
+.vinext/
+.wrangler/
+coverage/
+
+# Local agent/runtime state
+.codex/local/
+work/
+outputs/
+*.log

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "grdb": {
+      "source": "johnrogers/claude-swift-engineering",
+      "sourceType": "github",
+      "skillPath": "plugins/swift-engineering/skills/grdb/SKILL.md",
+      "computedHash": "090347de918a42fee57ceb509574e0dfee7f476ec9facf782137cd0fcd9a8440"
+    }
+  }
+}
