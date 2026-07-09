@@ -31,6 +31,9 @@ Read [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) before contributing
 
 This repository currently contains:
 
+- `Sources/Reality`: the launchable Phase 1 native SwiftUI shell
+- `Tests/RealityTests`: truthfulness and app-state tests
+- [`script/build_and_run.sh`](script/build_and_run.sh): canonical build, bundle, sign, and launch entrypoint
 - [`prototype/web`](prototype/web): the validated interaction prototype
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): native macOS architecture
 - [`docs/IMPLEMENTATION_PLAN.md`](docs/IMPLEMENTATION_PLAN.md): phased build plan and gates
@@ -60,11 +63,17 @@ npm run dev
 
 ### Native app
 
-The native target will be introduced in Phase 1 of the implementation plan. The canonical entrypoint will be:
-
 ```bash
 ./script/build_and_run.sh
 ```
+
+Run the complete Phase 1 gate with:
+
+```bash
+./script/verify.sh
+```
+
+The native shell currently provides the main window, menu-bar controls, Settings, navigation, and a truthful empty state. Automatic activity collection begins in Phase 3.
 
 ## Non-goals
 

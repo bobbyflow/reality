@@ -19,6 +19,8 @@
 
 ## Phase 1 — Native shell and truthful empty state
 
+**Status:** Complete and locally verified on 2026-07-09.
+
 **Deliverable:** A launchable SwiftPM `.app` with main window, menu bar control, Settings scene, stable bundle identity, and no fabricated activity.
 
 **Create:**
