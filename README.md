@@ -31,7 +31,7 @@ Read [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) before contributing
 
 This repository currently contains:
 
-- `Sources/Reality`: the launchable Phase 1 native SwiftUI shell
+- `Sources/Reality`: the native SwiftUI shell and Phase 2 GRDB source of truth
 - `Tests/RealityTests`: truthfulness and app-state tests
 - [`script/build_and_run.sh`](script/build_and_run.sh): canonical build, bundle, sign, and launch entrypoint
 - [`prototype/web`](prototype/web): the validated interaction prototype
@@ -73,7 +73,7 @@ Run the complete Phase 1 gate with:
 ./script/verify.sh
 ```
 
-The native shell currently provides the main window, menu-bar controls, Settings, navigation, and a truthful empty state. Automatic activity collection begins in Phase 3.
+The native app currently provides the main window, menu-bar controls, Settings, navigation, a truthful empty state, and a private indexed SQLite database. Automatic activity collection begins in Phase 3.
 
 ## Non-goals
 

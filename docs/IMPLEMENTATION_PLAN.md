@@ -45,6 +45,8 @@
 
 ## Phase 2 — GRDB source of truth
 
+**Status:** Complete and locally verified on 2026-07-09.
+
 **Deliverable:** Versioned local SQLite database with repository contracts and deletion guarantees.
 
 **Create:**

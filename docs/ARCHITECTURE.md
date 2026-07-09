@@ -71,21 +71,24 @@ No Screen Recording or Input Monitoring permission is required or requested.
 
 Database location: `~/Library/Application Support/Reality/reality.sqlite`.
 
-Tables:
+Phase 2 creates the durable activity boundary:
+
+- `activity_segments`
+- `manual_entries`
+- `categories`
+- `settings`
+
+Later migrations add collector evidence, classification history, and reviews:
 
 - `collector_runs`
 - `raw_samples`
 - `system_events`
-- `activity_segments`
-- `manual_entries`
 - `away_annotations`
-- `categories`
 - `classification_rules`
 - `classification_assignments`
 - `corrections`
 - `daily_intentions`
 - `daily_reviews`
-- `settings`
 
 Raw samples default to 14-day retention. Derived records remain until user deletion. Excluded intervals contain no app/domain/title metadata.
 

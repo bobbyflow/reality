@@ -9,6 +9,14 @@ permissions:
   contents: read
 
 jobs:
+  native-macos:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - run: swift test
+      - run: swift build --product Reality
+      - run: swift format lint --recursive Sources Tests Package.swift
+
   web-prototype:
     runs-on: ubuntu-latest
     defaults:
