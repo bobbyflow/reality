@@ -15,4 +15,4 @@ Please report security issues privately through GitHub Security Advisories rathe
 
 ## Distribution model
 
-The Accessibility-enabled v1 is intended for direct Developer ID distribution with hardened runtime and notarization. Accessibility permission is explicit and user-controlled. The app must remain useful in degraded app-only mode when permission is denied.
+V1 is intended for direct Developer ID distribution with hardened runtime and notarization. App-only tracking does not require Accessibility permission; denial remains visible and collection stays in degraded app-only mode. Focused titles are not implemented.

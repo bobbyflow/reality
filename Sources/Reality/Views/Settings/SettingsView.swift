@@ -5,7 +5,9 @@ struct SettingsView: View {
 
   var body: some View {
     TabView {
-      PrivacySettingsView()
+      GeneralSettingsView(store: store)
+        .tabItem { Label("General", systemImage: "gearshape") }
+      PrivacySettingsView(store: store)
         .tabItem { Label("Privacy", systemImage: "hand.raised") }
       RulesSettingsView()
         .tabItem { Label("Rules", systemImage: "list.bullet.rectangle") }

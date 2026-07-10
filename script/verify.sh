@@ -5,7 +5,9 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 bash -n script/build_and_run.sh
+bash -n script/security_check.sh
 swift test
+./script/security_check.sh
 ./script/build_and_run.sh --verify
 
 APP_BUNDLE="$ROOT_DIR/dist/Reality.app"

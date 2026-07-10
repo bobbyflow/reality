@@ -14,8 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: swift test
-      - run: swift build --product Reality
+      - run: ./script/package_app.sh
+      - run: codesign --verify --deep --strict dist/release/Reality.app
+      - run: unzip -t dist/release/Reality-0.1.0.zip
       - run: swift format lint --recursive Sources Tests Package.swift
+      - run: ./script/security_check.sh
+      - run: swift package resolve && git diff --exit-code Package.resolved
 
   web-prototype:
     runs-on: ubuntu-latest
@@ -31,4 +35,11 @@ jobs:
           cache-dependency-path: prototype/web/package-lock.json
       - run: npm ci
       - run: npm test
-      - run: npm audit --omit=dev
+      - run: npm audit --audit-level=high
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/dependency-review-action@v4

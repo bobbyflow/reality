@@ -50,4 +50,14 @@ final class GRDBCollectorEvidenceRepository: CollectorEvidenceRepository, @unche
       try db.execute(sql: "DELETE FROM collector_runs")
     }
   }
+
+  func deleteEvidence(endingBefore cutoff: Date) throws -> Int {
+    try pool.write { db in
+      try db.execute(
+        sql: "DELETE FROM raw_samples WHERE end_ms <= ?",
+        arguments: [cutoff.epochMilliseconds]
+      )
+      return db.changesCount
+    }
+  }
 }

@@ -265,9 +265,9 @@ final class ActivityCollector: CollectorControlling {
   }
 
   func setExcludedBundleIDs(_ bundleIDs: Set<String>) {
-    reconcile()
+    if timer != nil { reconcile() }
     excludedBundleIDs = bundleIDs
-    reconcile()
+    if timer != nil { reconcile() }
   }
 
   private func reconcile() {

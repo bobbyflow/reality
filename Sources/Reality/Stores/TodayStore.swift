@@ -83,10 +83,14 @@ final class TodayStore {
 
   func deleteToday(now: Date = .now, timezone: TimeZone = .current) throws {
     let interval = try dayInterval(now: now, timezone: timezone)
+    for block in blocks {
+      defaults.removeObject(forKey: annotationKey(block.sourceID))
+    }
     try evidenceRepository.deleteEvidence(in: interval)
     try activityRepository.deleteActivities(in: interval)
     blocks = []
     summary = .empty
+    awayAnnotations = [:]
   }
 
   func deleteAll() throws {
@@ -105,17 +109,7 @@ final class TodayStore {
   }
 
   func exportCSV(to url: URL) throws {
-    var lines = ["start,end,origin,title,state,category,duration_seconds"]
-    lines += blocks.map { block in
-      [
-        block.start.ISO8601Format(), block.end.ISO8601Format(), block.origin.rawValue,
-        awayAnnotations[block.sourceID] ?? block.title ?? block.appName ?? "", block.state.rawValue,
-        block.category?.rawValue ?? "",
-        String(Int(block.end.timeIntervalSince(block.start))),
-      ].map(csvField).joined(separator: ",")
-    }
-    try (lines.joined(separator: "\n") + "\n").write(
-      to: url, atomically: true, encoding: .utf8)
+    try ExportService().export(blocks: blocks, awayAnnotations: awayAnnotations, to: url)
   }
 
   func record(error: Error) {
@@ -130,10 +124,6 @@ final class TodayStore {
 
   private func annotationKey(_ id: UUID) -> String {
     "away.annotation.\(id.uuidString)"
-  }
-
-  private func csvField(_ value: String) -> String {
-    "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
   }
 
   private func dayInterval(now: Date, timezone: TimeZone) throws -> DateInterval {

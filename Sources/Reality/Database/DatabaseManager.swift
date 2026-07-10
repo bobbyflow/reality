@@ -1,6 +1,10 @@
 import Foundation
 import GRDB
 
+enum DatabaseManagerError: Error, Equatable {
+  case unsafeStoragePath
+}
+
 final class DatabaseManager {
   let pool: DatabasePool
   let databaseURL: URL
@@ -41,6 +45,20 @@ final class DatabaseManager {
       withIntermediateDirectories: true,
       attributes: [.posixPermissions: 0o700]
     )
+    let directoryValues = try directoryURL.resourceValues(forKeys: [
+      .isDirectoryKey, .isSymbolicLinkKey,
+    ])
+    guard directoryValues.isDirectory == true, directoryValues.isSymbolicLink != true else {
+      throw DatabaseManagerError.unsafeStoragePath
+    }
+    if FileManager.default.fileExists(atPath: databaseURL.path) {
+      let databaseValues = try databaseURL.resourceValues(forKeys: [
+        .isRegularFileKey, .isSymbolicLinkKey,
+      ])
+      guard databaseValues.isRegularFile == true, databaseValues.isSymbolicLink != true else {
+        throw DatabaseManagerError.unsafeStoragePath
+      }
+    }
     try FileManager.default.setAttributes(
       [.posixPermissions: 0o700],
       ofItemAtPath: directoryURL.path

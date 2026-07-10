@@ -32,6 +32,7 @@ final class AppModel {
       let manager = try DatabaseManager.live()
       let evidenceRepository = GRDBCollectorEvidenceRepository(pool: manager.pool)
       let activityRepository = GRDBActivityRepository(pool: manager.pool)
+      _ = try RetentionService(repository: evidenceRepository).prune(retentionDays: 14)
       let processor = ActivityProcessingService(
         evidenceRepository: evidenceRepository,
         activityRepository: activityRepository
@@ -43,12 +44,19 @@ final class AppModel {
       let reviewStore = ReviewStore()
       reviewStore.prepare(summary: todayStore.summary, intention: todayStore.intention)
       let collector = ActivityCollector(repository: evidenceRepository)
+      let excludedBundleIDs = Set(
+        UserDefaults.standard.stringArray(forKey: "privacy.excludedBundleIDs") ?? [])
+      collector.setExcludedBundleIDs(excludedBundleIDs)
       let model = AppModel(collector: collector)
       model.databaseManager = manager
       model.processingService = processor
       model.todayStore = todayStore
       model.reviewStore = reviewStore
-      model.settingsStore = SettingsStore(todayStore: todayStore, reviewStore: reviewStore)
+      model.settingsStore = SettingsStore(
+        todayStore: todayStore,
+        reviewStore: reviewStore,
+        updateExclusions: { [weak collector] in collector?.setExcludedBundleIDs($0) }
+      )
       collector.evidenceDidChange = { [weak processor, weak model] in
         try processor?.reprocessToday()
         try model?.todayStore?.reload()

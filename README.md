@@ -75,6 +75,10 @@ Run the complete Phase 1 gate with:
 
 The native app records private evidence, derives stable activity blocks, and exposes a complete daily timeline with intentions, manual capture, away labels, evidence-gated review, category patterns, one correction, CSV export, and deletion controls.
 
+Privacy hardening, retention, safe export, threat modelling, release packaging, and notarization
+automation are included. See [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md),
+[`docs/SECURITY_REVIEW.md`](docs/SECURITY_REVIEW.md), and [`docs/RELEASE.md`](docs/RELEASE.md).
+
 ## Non-goals
 
 Reality is not employee monitoring, project management, a public leaderboard, or a system for maximizing every minute. Rest and necessary personal time are not treated as failure.

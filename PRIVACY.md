@@ -9,13 +9,13 @@ Reality tracks the minimum evidence required to reconstruct time accurately.
 - Idle, locked, asleep, excluded, and unavailable states
 - User-created categories, intentions, corrections, and reviews
 
-## Disabled by default
+## Not collected in the current release
 
 - Focused window titles
 - Browser domains
 - AI-generated coaching
 
-Enabling focused titles requires macOS Accessibility permission. Browser domains require a separate opt-in browser extension and are not inferred from page titles.
+Focused titles would require a separately designed opt-in and macOS Accessibility permission. Browser domains would require an opt-in browser extension and are not inferred from page titles.
 
 ## Never collected
 
@@ -35,4 +35,4 @@ Enabling focused titles requires macOS Accessibility permission. Browser domains
 
 ## User controls
 
-Users can pause collection, exclude applications/domains, correct classifications, export data, delete a day/range, or permanently delete all data.
+Users can pause collection, exclude applications by bundle identifier, label away time, add manual activity, export a day, delete today, or permanently delete all data. Browser-domain exclusions are deferred because browser domains are not collected.

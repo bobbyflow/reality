@@ -136,6 +136,8 @@
 
 ## Phase 6 — Privacy hardening and threat model
 
+**Status:** Complete and locally verified on 2026-07-10.
+
 **Deliverable:** Security-reviewed local product suitable for dogfooding.
 
 **Create:**
@@ -153,6 +155,9 @@
 **Manual gate:** inspect unified logs and Git history for captured metadata; revoke permission mid-session; simulate disk full/corrupt DB; verify the app stops claiming collection.
 
 ## Phase 7 — Signed dogfood release
+
+**Status:** Release tooling and ad-hoc hardened-runtime package complete on 2026-07-10. Developer
+ID notarization and the seven-day dogfood gate remain external prerequisites.
 
 **Deliverable:** A signed, notarized direct-download build used for seven real days before browser-domain or AI work begins.
 
