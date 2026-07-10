@@ -99,20 +99,38 @@ struct TodayView: View {
           .realityEyebrow()
         TextField("Essential outcome", text: $essential)
           .textFieldStyle(.roundedBorder)
+          .onChange(of: essential) { _, _ in clearIntentionSaveConfirmation() }
         TextField("Optional outcome", text: $optionalOne)
           .textFieldStyle(.roundedBorder)
+          .onChange(of: optionalOne) { _, _ in clearIntentionSaveConfirmation() }
         TextField("Optional outcome", text: $optionalTwo)
           .textFieldStyle(.roundedBorder)
-        Button("Save intention") {
-          model.todayStore?.saveIntention(
-            essential: essential, optionalOutcomes: [optionalOne, optionalTwo])
-          if let store = model.todayStore {
-            model.reviewStore?.prepare(summary: store.summary, intention: store.intention)
+          .onChange(of: optionalTwo) { _, _ in clearIntentionSaveConfirmation() }
+        HStack(spacing: 12) {
+          Button("Save intention") {
+            model.todayStore?.saveIntention(
+              essential: essential, optionalOutcomes: [optionalOne, optionalTwo])
+            if let store = model.todayStore {
+              model.reviewStore?.prepare(summary: store.summary, intention: store.intention)
+            }
+          }
+          .buttonStyle(.borderedProminent)
+          .disabled(essential.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+          if let confirmation = model.todayStore?.intentionSaveConfirmation {
+            Label(confirmation, systemImage: "checkmark.circle.fill")
+              .font(.callout.weight(.semibold))
+              .foregroundStyle(.green)
+              .transition(.opacity.combined(with: .scale(scale: 0.9)))
           }
         }
-        .disabled(essential.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        .animation(.easeOut(duration: 0.18), value: model.todayStore?.intentionSaveConfirmation)
       }
     }
+  }
+
+  private func clearIntentionSaveConfirmation() {
+    model.todayStore?.clearIntentionSaveConfirmation()
   }
 
   @ViewBuilder

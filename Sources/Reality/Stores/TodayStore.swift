@@ -13,6 +13,7 @@ final class TodayStore {
   private(set) var blocks: [TimelineBlock] = []
   private(set) var summary: DailySummary = .empty
   private(set) var intention = DailyIntention()
+  private(set) var intentionSaveConfirmation: String?
   private(set) var errorMessage: String?
   private(set) var awayAnnotations: [UUID: String] = [:]
 
@@ -57,6 +58,11 @@ final class TodayStore {
     )
     defaults.set(intention.essential, forKey: "today.essential")
     defaults.set(intention.optionalOutcomes, forKey: "today.optional")
+    intentionSaveConfirmation = "Saved"
+  }
+
+  func clearIntentionSaveConfirmation() {
+    intentionSaveConfirmation = nil
   }
 
   func addManualActivity(
@@ -99,6 +105,7 @@ final class TodayStore {
     blocks = []
     summary = .empty
     intention = DailyIntention()
+    intentionSaveConfirmation = nil
     defaults.removeObject(forKey: "today.essential")
     defaults.removeObject(forKey: "today.optional")
     defaults.removeObject(forKey: "review.correction")
