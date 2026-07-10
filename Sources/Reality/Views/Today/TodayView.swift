@@ -62,7 +62,7 @@ struct TodayView: View {
             .foregroundStyle(.secondary)
             .font(.callout)
           Text(
-            "The collector is built in Phase 3. Until then, Reality will never claim it is watching your activity."
+            "Reality records app identity, idle time, and Mac lifecycle signals locally—not content."
           )
           .foregroundStyle(.tertiary)
           .font(.caption)
@@ -99,7 +99,9 @@ struct TodayView: View {
         Text(model.emptyStateMessage)
           .font(.system(size: 24, weight: .semibold, design: .serif))
         Text(
-          "Once the local collector is connected, your real timeline will build here automatically."
+          model.isTracking
+            ? "Raw evidence is being collected. The timeline appears after deterministic processing is connected."
+            : "Start automatic tracking to build a real timeline."
         )
         .multilineTextAlignment(.center)
         .foregroundStyle(.secondary)

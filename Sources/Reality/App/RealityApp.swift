@@ -5,7 +5,13 @@ import SwiftUI
 @MainActor
 struct RealityApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-  @State private var model = AppModel()
+  @State private var model: AppModel
+
+  init() {
+    let model = AppModel.live()
+    model.startCollector()
+    _model = State(initialValue: model)
+  }
 
   var body: some Scene {
     WindowGroup("Reality", id: "main") {

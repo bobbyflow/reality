@@ -49,4 +49,52 @@ struct AppModelTests {
     model.selection = .review
     #expect(model.selection == .review)
   }
+
+  @Test("reflects live collector health and delegates pause immediately")
+  func liveCollectorControl() {
+    let collector = FakeCollector()
+    let model = AppModel(collector: collector)
+
+    model.startCollector()
+    #expect(collector.startCount == 1)
+    #expect(model.collectorStatus == .tracking)
+
+    model.togglePause()
+    #expect(collector.isPaused)
+    #expect(model.collectorStatus == .paused)
+
+    collector.report(.degraded(.accessibilityDenied))
+    #expect(model.collectorStatus == .degraded)
+    #expect(model.isTracking)
+  }
+}
+
+@MainActor
+private final class FakeCollector: CollectorControlling {
+  var health: CollectorHealth = .stopped
+  var healthDidChange: ((CollectorHealth) -> Void)?
+  var startCount = 0
+  var isPaused = false
+
+  func start() {
+    startCount += 1
+    health = .healthy
+    healthDidChange?(health)
+  }
+
+  func stop() {
+    health = .stopped
+    healthDidChange?(health)
+  }
+
+  func setPaused(_ paused: Bool) {
+    isPaused = paused
+    health = paused ? .paused : .healthy
+    healthDidChange?(health)
+  }
+
+  func report(_ health: CollectorHealth) {
+    self.health = health
+    healthDidChange?(health)
+  }
 }

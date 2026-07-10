@@ -19,7 +19,10 @@ struct DatabaseMigrationTests {
       #expect(tables.contains("activity_segments"))
       #expect(tables.contains("categories"))
       #expect(tables.contains("manual_entries"))
+      #expect(tables.contains("collector_runs"))
+      #expect(tables.contains("raw_samples"))
       #expect(tables.contains("settings"))
+      #expect(tables.contains("system_events"))
 
       let categoryCount = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM categories")
       let retention = try String.fetchOne(
@@ -50,6 +53,19 @@ struct DatabaseMigrationTests {
       )
       let details = plan.map { row -> String in row["detail"] }
       #expect(details.contains { $0.contains("USING INDEX idx_manual_entries_range") })
+
+      let rawPlan = try Row.fetchAll(
+        db,
+        sql: """
+          EXPLAIN QUERY PLAN
+          SELECT * FROM raw_samples
+          WHERE start_ms < ? AND end_ms > ?
+          ORDER BY start_ms
+          """,
+        arguments: [2_000, 1_000]
+      )
+      let rawDetails = rawPlan.map { row -> String in row["detail"] }
+      #expect(rawDetails.contains { $0.contains("USING INDEX idx_raw_samples_range") })
     }
 
     let attributes = try FileManager.default.attributesOfItem(

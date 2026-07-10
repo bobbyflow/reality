@@ -78,11 +78,17 @@ Phase 2 creates the durable activity boundary:
 - `categories`
 - `settings`
 
-Later migrations add collector evidence, classification history, and reviews:
+Phase 3 adds append-only collector evidence:
 
 - `collector_runs`
 - `raw_samples`
 - `system_events`
+
+The live collector writes only `raw_samples`. Classification remains absent until Phase 4, so
+the capture path cannot silently assign productivity meaning.
+
+Later migrations add classification history and reviews:
+
 - `away_annotations`
 - `classification_rules`
 - `classification_assignments`

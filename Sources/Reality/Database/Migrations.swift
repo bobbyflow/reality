@@ -11,6 +11,7 @@ enum Migrations {
   static func makeMigrator() -> DatabaseMigrator {
     var migrator = makeV1Migrator()
     registerV2(on: &migrator)
+    registerV3(on: &migrator)
     return migrator
   }
 
@@ -110,6 +111,53 @@ enum Migrations {
           arguments: [key, value, now]
         )
       }
+    }
+  }
+
+  private static func registerV3(on migrator: inout DatabaseMigrator) {
+    migrator.registerMigration("v3_collector_evidence") { db in
+      try db.execute(
+        sql: """
+          CREATE TABLE collector_runs (
+            id TEXT PRIMARY KEY NOT NULL,
+            started_at_ms INTEGER NOT NULL,
+            ended_at_ms INTEGER,
+            stop_reason TEXT,
+            final_health TEXT
+          );
+
+          CREATE TABLE raw_samples (
+            id TEXT PRIMARY KEY NOT NULL,
+            run_id TEXT REFERENCES collector_runs(id) ON DELETE SET NULL,
+            start_ms INTEGER NOT NULL,
+            end_ms INTEGER NOT NULL,
+            monotonic_duration_ms INTEGER NOT NULL,
+            app_bundle_id TEXT,
+            app_name TEXT,
+            state TEXT NOT NULL,
+            quality TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            timezone_id TEXT NOT NULL,
+            created_at_ms INTEGER NOT NULL,
+            CHECK (end_ms > start_ms),
+            CHECK (monotonic_duration_ms > 0),
+            CHECK (state != 'excluded' OR (app_bundle_id IS NULL AND app_name IS NULL))
+          );
+
+          CREATE TABLE system_events (
+            id TEXT PRIMARY KEY NOT NULL,
+            run_id TEXT REFERENCES collector_runs(id) ON DELETE SET NULL,
+            occurred_at_ms INTEGER NOT NULL,
+            uptime_ms INTEGER NOT NULL,
+            kind TEXT NOT NULL,
+            created_at_ms INTEGER NOT NULL
+          );
+
+          CREATE INDEX idx_raw_samples_range ON raw_samples(start_ms, end_ms);
+          CREATE INDEX idx_raw_samples_run ON raw_samples(run_id);
+          CREATE INDEX idx_system_events_time ON system_events(occurred_at_ms);
+          """
+      )
     }
   }
 }

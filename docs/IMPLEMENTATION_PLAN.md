@@ -67,6 +67,8 @@
 
 ## Phase 3 — Deterministic collector
 
+**Status:** Complete and locally verified on 2026-07-10.
+
 **Deliverable:** Background collection of foreground application, idle, lock, sleep, wake, pause, and permission health.
 
 **Create:**

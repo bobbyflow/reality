@@ -28,8 +28,9 @@ struct SettingsView: View {
 
       Form {
         Toggle("Store focused window titles", isOn: $storeWindowTitles)
+          .disabled(true)
         Text(
-          "Off by default. Window titles can contain document names and message subjects. This preference does not collect anything until the native collector exists."
+          "Not available yet. Window titles can contain document names and message subjects, so app-only tracking remains the default."
         )
         .font(.caption)
         .foregroundStyle(.secondary)
