@@ -22,8 +22,12 @@ struct MenuBarView: View {
     }
     .disabled(!model.canTogglePause)
 
-    Button("Add activity") {}
-      .disabled(true)
+    Button("Add activity") {
+      model.requestCapture()
+      openWindow(id: "main")
+      NSApp.activate(ignoringOtherApps: true)
+    }
+    .disabled(model.todayStore == nil)
 
     Divider()
 

@@ -73,7 +73,7 @@ Run the complete Phase 1 gate with:
 ./script/verify.sh
 ```
 
-The native app records private local evidence and deterministically derives stable, non-overlapping activity blocks. Classification corrections outrank user and default rules; manual entries override automatic display without double-counting. Phase 5 adds the complete daily timeline and review interface.
+The native app records private evidence, derives stable activity blocks, and exposes a complete daily timeline with intentions, manual capture, away labels, evidence-gated review, category patterns, one correction, CSV export, and deletion controls.
 
 ## Non-goals
 

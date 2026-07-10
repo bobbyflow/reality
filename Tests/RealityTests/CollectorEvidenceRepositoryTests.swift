@@ -79,4 +79,25 @@ struct CollectorEvidenceRepositoryTests {
       #expect(error == .invalidDuration)
     }
   }
+
+  @Test("deletes raw evidence by range and globally")
+  func deletion() throws {
+    let fixture = try DatabaseFixture()
+    let manager = try DatabaseManager(databaseURL: fixture.databaseURL)
+    let repository = GRDBCollectorEvidenceRepository(pool: manager.pool)
+    let base = Date(timeIntervalSince1970: 75_000)
+    for offset in [0.0, 20.0] {
+      try repository.append(
+        CollectorEvidence(
+          start: base.addingTimeInterval(offset), end: base.addingTimeInterval(offset + 5),
+          monotonicDuration: 5, application: nil, state: .unknown, quality: .degraded,
+          reason: .applicationUnavailable, timezoneID: "UTC"))
+    }
+    try repository.deleteEvidence(in: DateInterval(start: base, duration: 10))
+    let retained = try repository.fetch(in: DateInterval(start: base, duration: 30))
+    #expect(retained.count == 1)
+    try repository.deleteAllEvidence()
+    let empty = try repository.fetch(in: DateInterval(start: base, duration: 30))
+    #expect(empty.isEmpty)
+  }
 }

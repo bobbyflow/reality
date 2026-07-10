@@ -114,6 +114,8 @@
 
 ## Phase 5 — Daily experience
 
+**Status:** Complete and locally verified on 2026-07-10.
+
 **Deliverable:** Real Today, Review, Patterns, intentions, Away labelling, corrections, and deletion UI.
 
 **Create:**

@@ -5,11 +5,15 @@ import Observation
 @Observable
 final class AppModel {
   var selection: NavigationSection = .today
+  private(set) var captureRequestID = 0
   private(set) var activities: [ActivitySummary] = []
   private(set) var collectorStatus: CollectorStatus
   private var collector: (any CollectorControlling)?
   private var databaseManager: DatabaseManager?
   private var processingService: ActivityProcessingService?
+  private(set) var todayStore: TodayStore?
+  private(set) var reviewStore: ReviewStore?
+  private(set) var settingsStore: SettingsStore?
 
   init(collectorStatus: CollectorStatus = .unavailable) {
     self.collectorStatus = collectorStatus
@@ -33,13 +37,25 @@ final class AppModel {
         activityRepository: activityRepository
       )
       try processor.reprocessToday()
+      let todayStore = TodayStore(
+        activityRepository: activityRepository, evidenceRepository: evidenceRepository)
+      try todayStore.reload()
+      let reviewStore = ReviewStore()
+      reviewStore.prepare(summary: todayStore.summary, intention: todayStore.intention)
       let collector = ActivityCollector(repository: evidenceRepository)
-      collector.evidenceDidChange = { [weak processor] in
-        try processor?.reprocessToday()
-      }
       let model = AppModel(collector: collector)
       model.databaseManager = manager
       model.processingService = processor
+      model.todayStore = todayStore
+      model.reviewStore = reviewStore
+      model.settingsStore = SettingsStore(todayStore: todayStore, reviewStore: reviewStore)
+      collector.evidenceDidChange = { [weak processor, weak model] in
+        try processor?.reprocessToday()
+        try model?.todayStore?.reload()
+        if let today = model?.todayStore {
+          model?.reviewStore?.prepare(summary: today.summary, intention: today.intention)
+        }
+      }
       return model
     } catch {
       return AppModel()
@@ -67,6 +83,11 @@ final class AppModel {
 
   func startCollector() {
     collector?.start()
+  }
+
+  func requestCapture() {
+    selection = .today
+    captureRequestID += 1
   }
 
   private static func status(for health: CollectorHealth) -> CollectorStatus {

@@ -11,17 +11,15 @@ struct RootView: View {
       case .today:
         TodayView(model: model)
       case .review:
-        PendingEvidenceView(
-          title: "Review",
-          message: "Your review will appear after Reality records real activity.",
-          systemImage: "list.bullet.rectangle"
-        )
+        if let store = model.reviewStore {
+          ReviewView(store: store)
+        } else {
+          PendingEvidenceView(
+            title: "Review", message: "The local evidence store is unavailable.",
+            systemImage: "exclamationmark.triangle")
+        }
       case .patterns:
-        PendingEvidenceView(
-          title: "Patterns",
-          message: "Patterns require several real days. Reality will not invent them.",
-          systemImage: "chart.line.uptrend.xyaxis"
-        )
+        PatternsView(summary: model.todayStore?.summary ?? .empty)
       }
     }
     .navigationSplitViewStyle(.balanced)

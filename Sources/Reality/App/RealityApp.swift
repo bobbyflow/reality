@@ -33,7 +33,7 @@ struct RealityApp: App {
     }
 
     Settings {
-      SettingsView()
+      SettingsView(store: model.settingsStore)
     }
   }
 }

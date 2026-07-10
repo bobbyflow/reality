@@ -2,6 +2,10 @@ import SwiftUI
 
 struct TodayView: View {
   @Bindable var model: AppModel
+  @State private var showingCapture = false
+  @State private var essential = ""
+  @State private var optionalOne = ""
+  @State private var optionalTwo = ""
 
   private var dateLabel: String {
     Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide))
@@ -12,8 +16,10 @@ struct TodayView: View {
       VStack(alignment: .leading, spacing: 22) {
         header
         truthGrid
-        emptyTimeline
-        tomorrowCard
+        timelineSection
+        if let store = model.todayStore {
+          RealityCheckView(summary: store.summary, correction: model.reviewStore?.correction)
+        }
         privacyFooter
       }
       .frame(maxWidth: 1_050, alignment: .leading)
@@ -21,6 +27,20 @@ struct TodayView: View {
     }
     .background(Color(nsColor: .windowBackgroundColor))
     .navigationTitle("Today")
+    .toolbar {
+      Button("Add Activity", systemImage: "plus") { showingCapture = true }
+        .disabled(model.todayStore == nil)
+    }
+    .sheet(isPresented: $showingCapture) {
+      if let store = model.todayStore { CaptureView(store: store) }
+    }
+    .onAppear {
+      guard let intention = model.todayStore?.intention else { return }
+      essential = intention.essential
+      optionalOne = intention.optionalOutcomes.first ?? ""
+      optionalTwo = intention.optionalOutcomes.dropFirst().first ?? ""
+    }
+    .onChange(of: model.captureRequestID) { _, _ in showingCapture = true }
   }
 
   private var header: some View {
@@ -77,16 +97,30 @@ struct TodayView: View {
       VStack(alignment: .leading, spacing: 10) {
         Text("TODAY’S INTENTION")
           .realityEyebrow()
-        Text("Nothing set yet")
-          .font(.title3.bold())
-        Text("Intentions arrive with durable local storage. The empty state is deliberate.")
-          .foregroundStyle(.secondary)
-          .font(.callout)
-        Spacer(minLength: 0)
-        Label("No fabricated goal", systemImage: "checkmark.shield")
-          .font(.caption.weight(.semibold))
-          .foregroundStyle(Color(red: 0.09, green: 0.52, blue: 0.42))
+        TextField("Essential outcome", text: $essential)
+          .textFieldStyle(.roundedBorder)
+        TextField("Optional outcome", text: $optionalOne)
+          .textFieldStyle(.roundedBorder)
+        TextField("Optional outcome", text: $optionalTwo)
+          .textFieldStyle(.roundedBorder)
+        Button("Save intention") {
+          model.todayStore?.saveIntention(
+            essential: essential, optionalOutcomes: [optionalOne, optionalTwo])
+          if let store = model.todayStore {
+            model.reviewStore?.prepare(summary: store.summary, intention: store.intention)
+          }
+        }
+        .disabled(essential.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
       }
+    }
+  }
+
+  @ViewBuilder
+  private var timelineSection: some View {
+    if let store = model.todayStore, !store.blocks.isEmpty {
+      TimelineView(store: store)
+    } else {
+      emptyTimeline
     }
   }
 
@@ -111,25 +145,6 @@ struct TodayView: View {
     }
   }
 
-  private var tomorrowCard: some View {
-    RealityCard(tint: Color(red: 0.09, green: 0.52, blue: 0.42).opacity(0.1)) {
-      HStack(spacing: 16) {
-        Image(systemName: "arrow.forward.circle")
-          .font(.title)
-          .foregroundStyle(Color(red: 0.09, green: 0.52, blue: 0.42))
-        VStack(alignment: .leading, spacing: 5) {
-          Text("ONE CORRECTION FOR TOMORROW")
-            .realityEyebrow()
-          Text("Waiting for a real day to review.")
-            .font(.headline)
-          Text("Reality recommends nothing until it has trustworthy evidence.")
-            .font(.callout)
-            .foregroundStyle(.secondary)
-        }
-      }
-    }
-  }
-
   private var privacyFooter: some View {
     HStack {
       Label("Local-first", systemImage: "internaldrive")
@@ -145,7 +160,7 @@ struct TodayView: View {
   }
 }
 
-private struct RealityCard<Content: View>: View {
+struct RealityCard<Content: View>: View {
   var tint: Color = .clear
   @ViewBuilder let content: Content
 
@@ -166,7 +181,7 @@ private struct RealityCard<Content: View>: View {
 }
 
 extension View {
-  fileprivate func realityEyebrow() -> some View {
+  func realityEyebrow() -> some View {
     font(.caption2.weight(.bold))
       .tracking(1.2)
       .foregroundStyle(.secondary)

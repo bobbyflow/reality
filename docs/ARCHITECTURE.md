@@ -92,6 +92,11 @@ Phase 4 deterministically transforms raw samples into stable, non-overlapping
 raw evidence and manual entries. Classification priority is correction, user rule, default rule,
 then explicit Unknown. Timeline projection resolves manual overlap without double-counting.
 
+Phase 5 exposes those projections through `TodayStore`, `ReviewStore`, and `SettingsStore`.
+Views receive already-resolved timeline blocks and summaries; they never aggregate raw records.
+Intentions, away labels, and the single daily correction remain local. Explicit CSV export and
+range/all-data deletion are user-triggered actions.
+
 Later migrations add classification history and reviews:
 
 - `away_annotations`

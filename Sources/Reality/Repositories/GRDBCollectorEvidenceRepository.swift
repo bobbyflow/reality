@@ -33,4 +33,21 @@ final class GRDBCollectorEvidenceRepository: CollectorEvidenceRepository, @unche
       ).map { try $0.domainValue() }
     }
   }
+
+  func deleteEvidence(in interval: DateInterval) throws {
+    try pool.write { db in
+      try db.execute(
+        sql: "DELETE FROM raw_samples WHERE start_ms < ? AND end_ms > ?",
+        arguments: [interval.end.epochMilliseconds, interval.start.epochMilliseconds]
+      )
+    }
+  }
+
+  func deleteAllEvidence() throws {
+    try pool.write { db in
+      try db.execute(sql: "DELETE FROM raw_samples")
+      try db.execute(sql: "DELETE FROM system_events")
+      try db.execute(sql: "DELETE FROM collector_runs")
+    }
+  }
 }
