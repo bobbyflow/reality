@@ -14,6 +14,7 @@ enum ActivityRepositoryError: Error, Equatable {
 protocol ActivityRepository {
   func save(manualEntry: ManualEntry) throws
   func save(segment: ActivitySegment) throws
+  func replaceAutomaticSegments(in interval: DateInterval, with segments: [ActivitySegment]) throws
   func fetchTimeline(in interval: DateInterval) throws -> [TimelineItem]
   func deleteActivities(in interval: DateInterval) throws
   func deleteAllActivities() throws

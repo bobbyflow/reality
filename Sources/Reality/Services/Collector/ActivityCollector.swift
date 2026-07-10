@@ -206,6 +206,7 @@ final class ActivityCollector: CollectorControlling {
   private var timer: Timer?
   private var isPaused = false
   private var excludedBundleIDs: Set<String> = []
+  var evidenceDidChange: (() throws -> Void)?
   private(set) var health: CollectorHealth = .stopped {
     didSet {
       guard oldValue != health else { return }
@@ -286,6 +287,9 @@ final class ActivityCollector: CollectorControlling {
     do {
       for item in evidence {
         try repository.append(item)
+      }
+      if !evidence.isEmpty {
+        try evidenceDidChange?()
       }
       health = stateMachine.health
     } catch {

@@ -31,7 +31,7 @@ Read [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) before contributing
 
 This repository currently contains:
 
-- `Sources/Reality`: the native SwiftUI app, GRDB source of truth, and Phase 3 collector
+- `Sources/Reality`: the native app, private evidence store, collector, and deterministic processor
 - `Tests/RealityTests`: truthfulness and app-state tests
 - [`script/build_and_run.sh`](script/build_and_run.sh): canonical build, bundle, sign, and launch entrypoint
 - [`prototype/web`](prototype/web): the validated interaction prototype
@@ -73,7 +73,7 @@ Run the complete Phase 1 gate with:
 ./script/verify.sh
 ```
 
-The native app now records foreground application, idle/away, lock, sleep, wake, pause, clock anomalies, and collector health as private local evidence. Classification and timeline projection remain intentionally absent until Phase 4.
+The native app records private local evidence and deterministically derives stable, non-overlapping activity blocks. Classification corrections outrank user and default rules; manual entries override automatic display without double-counting. Phase 5 adds the complete daily timeline and review interface.
 
 ## Non-goals
 

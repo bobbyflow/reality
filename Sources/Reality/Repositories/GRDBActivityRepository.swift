@@ -70,6 +70,31 @@ final class GRDBActivityRepository: ActivityRepository {
     }
   }
 
+  func replaceAutomaticSegments(
+    in interval: DateInterval, with segments: [ActivitySegment]
+  ) throws {
+    guard interval.duration > 0 else {
+      throw ActivityRepositoryError.invalidInterval
+    }
+    for segment in segments {
+      guard segment.end > segment.start else {
+        throw ActivityRepositoryError.invalidInterval
+      }
+      guard segment.derivationVersion > 0 else {
+        throw ActivityRepositoryError.invalidDerivationVersion
+      }
+    }
+    try pool.write { db in
+      try db.execute(
+        sql: "DELETE FROM activity_segments WHERE start_ms < ? AND end_ms > ?",
+        arguments: [interval.end.epochMilliseconds, interval.start.epochMilliseconds]
+      )
+      for segment in segments {
+        try ActivitySegmentRecord(segment).insert(db)
+      }
+    }
+  }
+
   func deleteActivities(in interval: DateInterval) throws {
     let start = interval.start.epochMilliseconds
     let end = interval.end.epochMilliseconds

@@ -100,7 +100,7 @@ struct TodayView: View {
           .font(.system(size: 24, weight: .semibold, design: .serif))
         Text(
           model.isTracking
-            ? "Raw evidence is being collected. The timeline appears after deterministic processing is connected."
+            ? "Evidence is being processed into private activity blocks. The daily timeline arrives next."
             : "Start automatic tracking to build a real timeline."
         )
         .multilineTextAlignment(.center)

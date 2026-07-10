@@ -9,6 +9,7 @@ final class AppModel {
   private(set) var collectorStatus: CollectorStatus
   private var collector: (any CollectorControlling)?
   private var databaseManager: DatabaseManager?
+  private var processingService: ActivityProcessingService?
 
   init(collectorStatus: CollectorStatus = .unavailable) {
     self.collectorStatus = collectorStatus
@@ -25,9 +26,20 @@ final class AppModel {
   static func live() -> AppModel {
     do {
       let manager = try DatabaseManager.live()
-      let repository = GRDBCollectorEvidenceRepository(pool: manager.pool)
-      let model = AppModel(collector: ActivityCollector(repository: repository))
+      let evidenceRepository = GRDBCollectorEvidenceRepository(pool: manager.pool)
+      let activityRepository = GRDBActivityRepository(pool: manager.pool)
+      let processor = ActivityProcessingService(
+        evidenceRepository: evidenceRepository,
+        activityRepository: activityRepository
+      )
+      try processor.reprocessToday()
+      let collector = ActivityCollector(repository: evidenceRepository)
+      collector.evidenceDidChange = { [weak processor] in
+        try processor?.reprocessToday()
+      }
+      let model = AppModel(collector: collector)
       model.databaseManager = manager
+      model.processingService = processor
       return model
     } catch {
       return AppModel()

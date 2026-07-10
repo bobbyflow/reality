@@ -278,4 +278,33 @@ struct ActivityRepositoryContractTests {
     #expect(stored.start == excluded.start)
     #expect(stored.end == excluded.end)
   }
+
+  @Test("replaces automatic derivation atomically without deleting manual entries")
+  func replacesAutomaticDerivation() throws {
+    let fixture = try DatabaseFixture()
+    let manager = try DatabaseManager(databaseURL: fixture.databaseURL)
+    let repository = GRDBActivityRepository(pool: manager.pool)
+    let base = Date(timeIntervalSince1970: 45_000)
+    let manual = ManualEntry(
+      id: UUID(), start: base, end: base.addingTimeInterval(60), title: "Keep me",
+      category: .focus, note: nil, timezoneID: "UTC", createdAt: base, updatedAt: base)
+    let old = ActivitySegment(
+      id: UUID(), start: base, end: base.addingTimeInterval(60), appBundleID: "old",
+      appName: "Old", state: .active, source: .automatic, quality: .exact, category: .admin,
+      timezoneID: "UTC", derivationVersion: 1)
+    let replacement = ActivitySegment(
+      id: UUID(), start: base, end: base.addingTimeInterval(60), appBundleID: "new",
+      appName: "New", state: .active, source: .automatic, quality: .exact, category: .focus,
+      timezoneID: "UTC", derivationVersion: 2)
+    try repository.save(manualEntry: manual)
+    try repository.save(segment: old)
+
+    try repository.replaceAutomaticSegments(
+      in: DateInterval(start: base, duration: 60), with: [replacement])
+
+    #expect(
+      try repository.fetchTimeline(in: DateInterval(start: base, duration: 60))
+        == [.automatic(replacement), .manual(manual)]
+    )
+  }
 }

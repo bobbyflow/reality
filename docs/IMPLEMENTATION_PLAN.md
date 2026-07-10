@@ -89,6 +89,8 @@
 
 ## Phase 4 — Segmentation, exclusions, and classification
 
+**Status:** Complete and locally verified on 2026-07-10.
+
 **Deliverable:** Reproducible activity blocks that can be corrected without corrupting raw evidence.
 
 **Create:**

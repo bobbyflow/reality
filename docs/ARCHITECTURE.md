@@ -84,8 +84,13 @@ Phase 3 adds append-only collector evidence:
 - `raw_samples`
 - `system_events`
 
-The live collector writes only `raw_samples`. Classification remains absent until Phase 4, so
-the capture path cannot silently assign productivity meaning.
+The live collector writes only `raw_samples`; it never assigns productivity meaning in the
+capture path.
+
+Phase 4 deterministically transforms raw samples into stable, non-overlapping
+`activity_segments`. Reprocessing atomically replaces derived automatic blocks while preserving
+raw evidence and manual entries. Classification priority is correction, user rule, default rule,
+then explicit Unknown. Timeline projection resolves manual overlap without double-counting.
 
 Later migrations add classification history and reviews:
 
