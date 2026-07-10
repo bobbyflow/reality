@@ -8,7 +8,20 @@ protocol IdleStateProviding: AnyObject {
 
 @MainActor
 final class IdleStateProvider: IdleStateProviding {
+  private let secondsSinceLastEvent: (CGEventType) -> TimeInterval
+
+  init(
+    secondsSinceLastEvent: @escaping (CGEventType) -> TimeInterval = { eventType in
+      CGEventSource.secondsSinceLastEventType(
+        .combinedSessionState, eventType: eventType)
+    }
+  ) {
+    self.secondsSinceLastEvent = secondsSinceLastEvent
+  }
+
   var idleDuration: TimeInterval {
-    CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .null)
+    // CoreGraphics defines raw UInt32.max as its any-input sentinel.
+    let anyInput = CGEventType(rawValue: UInt32.max)!
+    return secondsSinceLastEvent(anyInput)
   }
 }
